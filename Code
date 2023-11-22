@@ -1,0 +1,333 @@
+import os
+def clean():
+     import os, time
+     temp=input("\n\nPress Enter to Continue ..........")
+     time.sleep(2)
+     os.system('cls')
+     
+def loading():
+    import time
+    import sys
+    done = 0
+    while (done <=2):
+     if(done!=0):
+      print("......",done,end='')
+     sys.stdout.write('\rloading |')
+     time.sleep(0.1)
+     sys.stdout.write('\rloading /')
+     time.sleep(0.1)
+     sys.stdout.write('\rloading -')
+     time.sleep(0.1)
+     sys.stdout.write('\rloading \\')
+     time.sleep(0.1)
+     done +=2
+    sys.stdout.write('\rDone! ')
+
+
+loading()
+def product_mgmt( ):
+    while True :
+     print("\t\t\t 1. Add New Product")
+     print("\t\t\t 2. List Product")
+     print("\t\t\t 3. Update Product")
+     print("\t\t\t 4. Delete Product")
+     print("\t\t\t 5. Back (Main Menu)")
+     p=int (input("\t\tEnter Your Choice :"))
+     if p==1:
+      add_product()
+     elif p==2:
+      search_product()
+     elif p==3:
+      update_product()
+     elif p==4:
+      delete_product()
+     elif p== 5 :
+      break
+
+def purchase_mgmt( ):
+    while True :
+     print("\t\t\t 1. Add Order")
+     print("\t\t\t 2. List Order")
+     print("\t\t\t 3. Delete Order")
+     print("\t\t\t 4. Back (Main Menu)")
+     o=int (input("\t\tEnter Your Choice :"))
+     if o==1 :
+      add_order()
+     if o==2 :
+      list_order()
+     if o==3 :
+      delete_order()
+     if o==4:
+      break
+
+def sales_mgmt( ):
+    while True :
+     print("\t\t\t 1. Sale Items")
+     print("\t\t\t 2. List Sales")
+     print("\t\t\t 3. Back (Main Menu)")
+     s=int (input("\t\tEnter Your Choice :"))
+     if s== 1 :
+      sale_product()
+     if s== 2 :
+      list_sale()
+     if s== 3 :
+      break
+
+def user_mgmt( ):
+    while True :
+     print("\t\t\t 1. Add user")
+     print("\t\t\t 2. List user")
+     print("\t\t\t 3. Delete User")
+     print("\t\t\t 4. Back (Main Menu)")
+     u=int (input("\t\tEnter Your Choice :"))
+     if u==1:
+      add_user()
+     if u==2:
+      list_user()
+     if u==3:
+      delete_user()
+     if u==4:      
+      break
+
+def add_order():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    orderid=int(input("\t\tEnter order id :"))
+    mycursor.execute("SELECT count(*) FROM orders WHERE orderid=?;",orderid)
+    x = mycursor.fetchall()
+    cnt=x[0][0]
+    if cnt==0:
+      code=int(input("\t\tEnter product code :"))
+      price=float(input("\t\tEnter product unit price :"))
+      quantity=int(input("\t\tEnter order quantity:"))
+      supplier=str(input("\t\tEnter supplier name :"))
+      category=str(input("\t\tEnter order category :"))
+      mycursor.execute("INSERT INTO orders values(?,?,?,?,?,?)",(orderid,code,price,quantity,supplier,category))
+      conn.commit()
+      print("\t\t ordered placed successfully")
+    else:
+      print("\t\t order already exist")
+    conn.close()
+def list_order():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    sql="SELECT * from orders"
+    mycursor.execute(sql)
+    clrscr()
+    print("\t\t\t\t\t\t ORDER DETAILS")
+    print("\t\t","-"*88)
+    print("                 orderid         Product code    price           quantity        Supplier        Category")
+    print("\t\t","-"*88)
+    for i in mycursor:
+      print("\t\t",i[0],"\t\t",i[1],"\t\t",i[2],"\t\t",i[3],"\t\t",i[4],"\t\t",i[5])
+    print("\t\t","-"*88)
+    conn.close()
+    
+def delete_order():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    orderid=str(input("Enter the Order id:"))
+    sql="DELETE FROM orders WHERE orderid = ?;"
+    val=(orderid)
+    mycursor.execute(sql,val)
+    conn.commit()
+    print(mycursor.rowcount," record(s) deleted");
+    conn.close()
+
+def add_product():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    code=int(input("\t\tEnter product code :"))
+    mycursor.execute("SELECT count(*) FROM product WHERE pcode=?;",code)
+    x = mycursor.fetchall()
+    cnt=x[0][0]
+    if cnt==0:
+      name=str(input("\t\tEnter product name :"))
+      qty=int(input("\t\tEnter product quantity :"))
+      price=float(input("\t\tEnter product unit price :"))
+      cat=str(input("\t\tEnter Product category :"))
+      mycursor.execute("INSERT INTO product values(?,?,?,?,?)",(code,name,price,qty,cat))
+      conn.commit()
+      print("\t\t\tproduct add successfully")
+    else:
+      print("\t\t\t Product already exist")
+    conn.close()
+def update_product():
+    import pyodbc
+    conn=pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor=conn.cursor()
+    pcode=int(input("Enter the product code :"))
+    pqty=int(input("Enter the quantity :"))
+    sql="UPDATE product SET pqty=?  WHERE pcode=? ;"
+    val=(pqty,pcode)
+    mycursor.execute(sql,val)
+    conn.commit()
+    print("\t\t Product details updated")
+    conn.close()
+
+def delete_product():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor=conn.cursor()
+    code=int(input("Enter the product code :"))
+    sql="DELETE FROM product WHERE pcode = ?;"
+    val=(code)
+    mycursor.execute(sql,val)
+    conn.commit()
+    print(mycursor.rowcount," record(s) deleted");
+    conn.close()
+
+def search_product():
+    while True :
+     print("\t\t\t 1. List of product")
+     print("\t\t\t 2. Back (Main Menu)")
+     s=int (input("\t\tEnter Your Choice :"))
+     if s==1 :
+      list_product()            
+     if s==2 :
+      break
+ 
+def list_product():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    sql="SELECT * from product"
+    mycursor.execute(sql)
+    clrscr()
+    print("\t\t\t\t PRODUCT DETAILS")
+    print("\t\t","-"*64)
+    print("\t\t code\t name\t\tprice   \tquantity\tcategory")
+    print("\t\t","-"*64)
+    for i in mycursor:
+     print("\t\t",i[0],"\t",i[1],"\t",i[2],"\t\t",i[3],"\t\t",i[4])
+    print("\t\t","-"*64)
+    conn.close()
+def sale_product():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    pcode=int(input("Enter product code: "))
+    mycursor.execute("SELECT count(*) from product WHERE pcode=?",pcode)
+    x = mycursor.fetchall()
+    cnt=x[0][0]
+    if cnt !=0 :
+     mycursor1 = conn.cursor()
+     mycursor1.execute("SELECT * from product WHERE pcode=?",pcode)
+     x = mycursor1.fetchall()
+     price=x[0][2]
+     pqty=x[0][3]
+     pname=x[0][1]
+     qty=int(input("Enter no of quantity :"))
+     if qty <= pqty:
+      qnty=pqty-qty
+      mycursor2 = conn.cursor()
+      cid=int(input("enter the customer id:"))
+      cname=str(input("Enter the customer name:"))
+      total=qty*price;
+      mycursor2.execute("insert into sales values(?,?,?,?,?,?,?)",(cid,cname,pcode,pname,price,qty,total))
+      mycursor1.execute("update product set pqty=? where pcode =?",(qnty,pcode))
+      print ("Collect  Rs. ", total)
+      conn.commit()
+     else:
+      print(" Quantity not Available")
+    else:
+      print(" Product is not avalaible")
+    conn.close()
+
+def list_sale():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    mycursor.execute("SELECT * FROM sales")
+    print(" \t\t\t\tSALES DETAILS")
+    print("-"*110)
+    print("cid\t\tcname\t\tProduct Code\tproduct name\tPrice\t\tQuantity\tTotal")
+    print("-"*110)
+    x=mycursor.fetchall()
+    for i in range(0,len(x)):
+     for j in range(0,7):
+      print(x[i][j],end='\t\t')
+     print()
+    print("-"*110)
+    conn.close()
+
+def add_user():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    ud=input("Enter emaid id :")
+    name=input("Enter Name :")
+    paswrd=input("Enter Password :")
+    mycursor.execute("insert into users values (?,?,?)",(ud,name,paswrd))
+    conn.commit()
+    print(mycursor.rowcount, " user created")
+    conn.close()
+
+
+def list_user():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    sql="SELECT * from users"
+    mycursor.execute(sql)
+    clrscr()
+    print("\t\t\t USER DETAILS")
+    print("\t\t","-"*27)
+    print("\t\t UID     Name    Password   ")
+    print("\t\t","-"*27)
+    for i in mycursor:
+     print("\t\t",i[0],"\t",i[1],"\t",i[2])
+    print("\t\t","-"*27)
+    conn.close()
+
+def delete_user():
+    import pyodbc
+    conn = pyodbc.connect("DSN=goyal;Trusted_connection=yes")
+    mycursor = conn.cursor()
+    code=str(input("Enter the user name :"))
+    sql="DELETE FROM users WHERE name = ?;"
+    val=(code)
+    mycursor.execute(sql,val)
+    conn.commit()
+    print(mycursor.rowcount," record(s) deleted");
+    conn.close()
+
+def clrscr():
+    print("\n"*5)
+
+
+while True:
+ clean()
+ clrscr()
+ os.system('cls')
+ print("\t\t\t\t\t\t STOCK MANAGEMENT")
+ print("\t\t\t\t\t\t ****************\n")
+ print("\t\t 1. PRODUCT MANAGEMENT")
+ print("\t\t 2. PURCHASE MANAGEMENT")
+ print("\t\t 3. SALES MANAGEMENT")
+ print("\t\t 4. USER MANAGEMENT")
+ print("\t\t 5. EXIT\n")
+ n=int(input("Enter your choice :"))
+ if n== 1:
+  os.system('cls')
+  clrscr()
+  product_mgmt()
+ elif n== 2:
+  os.system('cls')
+  clrscr()
+  purchase_mgmt()
+ elif n== 3:
+  os.system('cls')
+  clrscr()
+  sales_mgmt()
+ elif n== 4:
+  os.system('cls')
+  clrscr()
+  user_mgmt()
+ elif n== 5:
+  break
+  clrscr()
